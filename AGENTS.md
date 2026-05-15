@@ -73,6 +73,9 @@ src/
 This repo ships agent skills under `.agents/skills/<name>/SKILL.md`. They are installed via [`npx skills`](https://github.com/anthropics/skills) and work across multiple coding agents.
 
 - [`nextjs16-docs-first`](.agents/skills/nextjs16-docs-first/SKILL.md) — read bundled Next 16 docs before editing route / component / config code.
+- [`rsc-vs-client`](.agents/skills/rsc-vs-client/SKILL.md) — Server vs Client Component discipline; when `"use client"` is required and when it's waste.
+- [`tailwind-v4`](.agents/skills/tailwind-v4/SKILL.md) — Tailwind v4 CSS-first config rules; no `tailwind.config.js`.
+- [`moneta-money`](.agents/skills/moneta-money/SKILL.md) — money handling: integer minor units, ISO 4217 currency, `Intl.NumberFormat` at UI boundary, no floats.
 - [`skill-creator`](.agents/skills/skill-creator/SKILL.md) — scaffold and iterate on new skills.
 
 To add another skill: `npx skills add <source>` or use `skill-creator` to author one. Any new skill **must** be listed here so other agents can discover it.
