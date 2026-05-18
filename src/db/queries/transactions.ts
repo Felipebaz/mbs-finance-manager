@@ -4,6 +4,7 @@ import { and, desc, eq, gte, lt, sql } from "drizzle-orm";
 
 import { db } from "../client";
 import { accounts, categories, transactions, type Transaction } from "../schema";
+import { formatIsoDate } from "@/lib/dates";
 
 export type TransactionWithRefs = Transaction & {
   accountName: string;
@@ -113,8 +114,7 @@ export function netWorthSeries(): NetWorthPoint[] {
   for (const r of rows) {
     const delta = r.type === "transfer" ? 0 : r.amountMinor;
     running += delta;
-    const day = r.occurredAt.toISOString().slice(0, 10);
-    dayMap.set(day, running);
+    dayMap.set(formatIsoDate(r.occurredAt), running);
   }
   const points: NetWorthPoint[] = Array.from(dayMap, ([date, totalMinor]) => ({
     date,
@@ -122,10 +122,7 @@ export function netWorthSeries(): NetWorthPoint[] {
   }));
   points.sort((a, b) => a.date.localeCompare(b.date));
   if (points.length === 0) {
-    points.push({
-      date: new Date().toISOString().slice(0, 10),
-      totalMinor: opening,
-    });
+    points.push({ date: formatIsoDate(new Date()), totalMinor: opening });
   }
   return points;
 }

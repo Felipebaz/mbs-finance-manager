@@ -13,7 +13,3 @@ export function listCategories(): Category[] {
     .orderBy(categories.kind, categories.name)
     .all();
 }
-
-export function listAllCategories(): Category[] {
-  return db.select().from(categories).orderBy(categories.kind, categories.name).all();
-}

@@ -43,7 +43,9 @@ function getDb(): DB {
 const proxyTarget = Object.create(null) as DB;
 
 export const db: DB = new Proxy(proxyTarget, {
-  get(_target, prop, receiver) {
-    return Reflect.get(getDb(), prop, receiver);
+  get(_target, prop) {
+    const real = getDb();
+    const value = Reflect.get(real, prop, real);
+    return typeof value === "function" ? value.bind(real) : value;
   },
 });
