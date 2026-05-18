@@ -1,10 +1,10 @@
 import Link from "next/link";
 
-type Props = {
+type Props = Readonly<{
   title: string;
   description?: string;
   cta?: { href: string; label: string };
-};
+}>;
 
 export function EmptyState({ title, description, cta }: Props) {
   return (

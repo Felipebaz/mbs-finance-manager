@@ -10,7 +10,9 @@ const NAV = [
   { href: "/settings", label: "Settings" },
 ];
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+type AppShellProps = Readonly<{ children: React.ReactNode }>;
+
+export function AppShell({ children }: AppShellProps) {
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
       <aside className="border-b border-border bg-muted/30 px-4 py-4 md:w-60 md:border-b-0 md:border-r md:py-6">

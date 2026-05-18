@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type Props = {
+type Props = Readonly<{
   href: string;
   label: string;
   exact?: boolean;
-};
+}>;
 
 export function NavLink({ href, label, exact = false }: Props) {
   const pathname = usePathname();
