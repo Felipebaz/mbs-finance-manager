@@ -5,8 +5,26 @@ export const dynamic = "force-dynamic";
 import { EmptyState } from "../_components/EmptyState";
 import { MoneyText } from "../_components/MoneyText";
 import { getSettings } from "@/db/queries/settings";
-import { listTransactions } from "@/db/queries/transactions";
+import { listTransactions, type TransactionWithRefs } from "@/db/queries/transactions";
 import { formatDateForDisplay } from "@/lib/dates";
+
+function CategoryCell({ tx }: Readonly<{ tx: TransactionWithRefs }>) {
+  if (tx.categoryName) {
+    return (
+      <span className="inline-flex items-center gap-2">
+        <span
+          className="h-2 w-2 rounded-full"
+          style={{ background: tx.categoryColor ?? "#6b7280" }}
+        />
+        {tx.categoryName}
+      </span>
+    );
+  }
+  if (tx.type === "transfer") {
+    return <span className="text-muted-foreground">Transfer</span>;
+  }
+  return <span className="text-muted-foreground">—</span>;
+}
 
 export default function TransactionsPage() {
   const settings = getSettings();
@@ -51,19 +69,7 @@ export default function TransactionsPage() {
                   </td>
                   <td className="px-4 py-2">{t.accountName}</td>
                   <td className="px-4 py-2">
-                    {t.categoryName ? (
-                      <span className="inline-flex items-center gap-2">
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{ background: t.categoryColor ?? "#6b7280" }}
-                        />
-                        {t.categoryName}
-                      </span>
-                    ) : t.type === "transfer" ? (
-                      <span className="text-muted-foreground">Transfer</span>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
+                    <CategoryCell tx={t} />
                   </td>
                   <td className="px-4 py-2 capitalize">{t.type}</td>
                   <td className="px-4 py-2 text-muted-foreground">{t.note ?? ""}</td>

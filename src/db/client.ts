@@ -40,8 +40,8 @@ function getDb(): DB {
   return globalThis.__monetaDb;
 }
 
-export const db = new Proxy({} as DB, {
+export const db: DB = new Proxy({} as DB, {
   get(_target, prop, receiver) {
     return Reflect.get(getDb(), prop, receiver);
   },
-}) as DB;
+});
