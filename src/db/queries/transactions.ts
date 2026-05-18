@@ -3,13 +3,7 @@ import "server-only";
 import { and, desc, eq, gte, lt, sql } from "drizzle-orm";
 
 import { db } from "../client";
-import {
-  accounts,
-  categories,
-  transactions,
-  type Category,
-  type Transaction,
-} from "../schema";
+import { accounts, categories, transactions, type Transaction } from "../schema";
 
 export type TransactionWithRefs = Transaction & {
   accountName: string;
@@ -136,4 +130,4 @@ export function netWorthSeries(): NetWorthPoint[] {
   return points;
 }
 
-export type { Category };
+export type { Category } from "../schema";

@@ -15,7 +15,6 @@ const DB_PATH = path.join(DB_DIR, "moneta.db");
 const MIGRATIONS_DIR = path.resolve(process.cwd(), "drizzle");
 
 declare global {
-  // eslint-disable-next-line no-var
   var __monetaDb: DB | undefined;
 }
 
