@@ -59,6 +59,8 @@ Money is the domain. Get this wrong and everything downstream lies.
 | `npm run build`      | Production build + type-check                          |
 | `npm run start`      | Run built production server                            |
 | `npm run lint`       | Run ESLint                                             |
+| `npm run test`       | Run Vitest unit tests (single pass)                    |
+| `npm run test:watch` | Run Vitest in watch mode                               |
 | `npm run db:generate`| Generate Drizzle migration from `src/db/schema.ts`     |
 | `npm run db:migrate` | Apply pending migrations to `data/moneta.db`           |
 | `npm run db:studio`  | Open Drizzle Studio                                    |
@@ -67,8 +69,9 @@ Money is the domain. Get this wrong and everything downstream lies.
 ## How to verify changes
 
 1. `npm run lint` — ESLint passes.
-2. `npm run build` — type-check + production build succeed.
-3. `npm run dev` → http://localhost:3000 — exercise the changed feature in a browser. Type-check and lint don't verify UI correctness.
+2. `npm run test` — Vitest unit tests pass. Tests live next to source: `src/**/*.test.ts`. Pure-logic surfaces (money math, currency lookup, date helpers) must have tests; the `moneta-money` skill rules are enforced here.
+3. `npm run build` — type-check + production build succeed.
+4. `npm run dev` → http://localhost:3000 — exercise the changed feature in a browser. Type-check, lint, and unit tests don't verify UI correctness.
 
 ## Project layout
 
