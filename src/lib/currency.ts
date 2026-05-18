@@ -1,4 +1,8 @@
 const MINOR_UNITS_OVERRIDE: Record<string, number> = {
+  UYU: 2,
+  ARS: 2,
+  BRL: 2,
+  CLP: 0,
   EUR: 2,
   USD: 2,
   GBP: 2,

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { db } from "@/db/client";
+import { getSettings } from "@/db/queries/settings";
 import { accounts } from "@/db/schema";
 import { parseMoneyInput } from "@/lib/money";
 import { accountSchema, formDataToObject } from "@/lib/validation";
@@ -17,9 +18,10 @@ export async function createAccount(_prev: ActionState, fd: FormData): Promise<A
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
   const { name, type, currency, openingBalance } = parsed.data;
+  const { locale } = getSettings();
   let openingMinor: number;
   try {
-    openingMinor = parseMoneyInput(openingBalance, currency, "en-IE").amount;
+    openingMinor = parseMoneyInput(openingBalance, currency, locale).amount;
   } catch (e) {
     return { error: (e as Error).message };
   }

@@ -26,7 +26,7 @@ export function seedIfEmpty(db: DB): void {
 
   db.transaction((tx) => {
     tx.insert(schema.settings)
-      .values({ id: 1, defaultCurrency: "EUR", locale: "en-IE" })
+      .values({ id: 1, defaultCurrency: "UYU", locale: "es-UY" })
       .run();
     tx.insert(schema.categories).values(DEFAULT_CATEGORIES).run();
   });

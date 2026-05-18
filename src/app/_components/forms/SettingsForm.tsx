@@ -42,7 +42,7 @@ export function SettingsForm({ defaultCurrency, locale }: Props) {
           className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
         />
         <span className="block text-xs text-muted-foreground">
-          Examples: en-IE, en-US, de-DE, es-ES, ja-JP.
+          Examples: es-UY, es-AR, en-US, pt-BR, ja-JP.
         </span>
       </label>
 
