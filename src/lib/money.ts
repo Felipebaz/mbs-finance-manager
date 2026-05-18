@@ -22,7 +22,7 @@ function detectLocaleSeparators(locale: string): { group: string; decimal: strin
 }
 
 export function parseMoneyInput(raw: string, currency: string, locale: string): Money {
-  const cleaned = raw.replace(/\s/g, "").replace(/[^\d.,\-]/g, "");
+  const cleaned = raw.replace(/\s/g, "").replace(/[^\d.,-]/g, "");
   if (cleaned === "" || cleaned === "-") {
     throw new Error("Empty amount.");
   }
