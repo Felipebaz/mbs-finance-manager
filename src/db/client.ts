@@ -7,6 +7,7 @@ import { drizzle, type BetterSQLite3Database } from "drizzle-orm/better-sqlite3"
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 
 import * as schema from "./schema";
+import { seedIfEmpty } from "./seed";
 
 type DB = BetterSQLite3Database<typeof schema>;
 
@@ -23,15 +24,24 @@ function createDb(): DB {
   const sqlite = new Database(DB_PATH);
   sqlite.pragma("journal_mode = WAL");
   sqlite.pragma("foreign_keys = ON");
+  sqlite.pragma("busy_timeout = 5000");
   const database = drizzle(sqlite, { schema });
   if (existsSync(MIGRATIONS_DIR)) {
     migrate(database, { migrationsFolder: MIGRATIONS_DIR });
   }
+  seedIfEmpty(database);
   return database;
 }
 
-export const db: DB = globalThis.__monetaDb ?? createDb();
-if (!globalThis.__monetaDb) globalThis.__monetaDb = db;
+function getDb(): DB {
+  if (!globalThis.__monetaDb) {
+    globalThis.__monetaDb = createDb();
+  }
+  return globalThis.__monetaDb;
+}
 
-import { seedIfEmpty } from "./seed";
-seedIfEmpty(db);
+export const db = new Proxy({} as DB, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getDb(), prop, receiver);
+  },
+}) as DB;

@@ -51,7 +51,7 @@ export function NetWorthChart({ data, currency, locale }: Props) {
               borderRadius: 6,
             }}
             labelFormatter={(label) => fmtDate(String(label))}
-            formatter={(value: number) => [fmtMoney(value), "Net worth"]}
+            formatter={(value) => [fmtMoney(Number(value)), "Net worth"]}
           />
           <Line
             type="monotone"

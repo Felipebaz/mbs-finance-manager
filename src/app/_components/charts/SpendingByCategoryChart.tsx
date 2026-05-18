@@ -49,7 +49,7 @@ export function SpendingByCategoryChart({ slices, currency, locale }: Props) {
               border: "1px solid var(--border)",
               borderRadius: 6,
             }}
-            formatter={(value: number, name: string) => [fmt(value), name]}
+            formatter={(value, name) => [fmt(Number(value)), String(name)]}
           />
           <Legend
             verticalAlign="bottom"

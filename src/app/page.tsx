@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 import { NetWorthChart } from "./_components/charts/NetWorthChart";
 import { SpendingByCategoryChart } from "./_components/charts/SpendingByCategoryChart";
 import { EmptyState } from "./_components/EmptyState";
