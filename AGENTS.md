@@ -35,20 +35,34 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Money is the domain. Get this wrong and everything downstream lies.
 
-- **Never** store or compute money as JavaScript `number` (floats). Use integer minor units (e.g. cents) or a decimal library when one lands.
-- Format with `Intl.NumberFormat` at the UI boundary — not in the data layer.
-- Multi-currency is on the roadmap: every monetary value should carry an ISO 4217 currency code alongside its amount.
+- **Never** store or compute money as JavaScript `number` for fractional values. Use signed integer minor units (e.g. UYU centésimos, EUR cents). The canonical helpers live in `src/lib/money.ts` (`Money`, `parseMoneyInput`, `formatMoney`, `addMoney`/`subMoney`/`sumMoney`, `bankerRound`).
+- `Intl.NumberFormat` may only be used inside `src/lib/money.ts` and `src/lib/dates.ts`. Everywhere else, format through `MoneyText` or `formatMoneyMinor`.
+- Every monetary row carries an ISO 4217 currency code. Currency mismatch in arithmetic throws.
+- v1 sign convention: `amount_minor` is **signed at insert time**. Income +, expense −, transfer-out −, transfer-in +. Per-account balance = `opening_balance_minor + SUM(amount_minor)`. Cross-currency transfers are rejected.
+- Locale-aware parsing rejects ambiguous strings (e.g. `"1.5"` in `es-UY` where `.` is the thousands separator).
+- Full rules: see `.agents/skills/moneta-money/SKILL.md`.
 
-(This section will be tightened once a persistence layer and decimal library are chosen — see the roadmap in `README.md`.)
+## Persistence (v1)
+
+- SQLite via `better-sqlite3` + Drizzle ORM. DB file at `data/moneta.db` (git-ignored, created on first request).
+- Schema lives in `src/db/schema.ts`; migrations under `drizzle/`. Use `npm run db:generate` after schema edits, `npm run db:migrate` to apply manually (the dev server auto-applies on startup).
+- DB client (`src/db/client.ts`) is `import "server-only"`, lazy via a Proxy, with `busy_timeout=5000` and WAL journaling. Every file that touches the DB must import `db` from `@/db/client`.
+- **Gotcha:** `better-sqlite3` is a native module. `next.config.ts` declares `serverExternalPackages: ['better-sqlite3']` so Turbopack does not try to bundle the `.node`. Do not remove this.
+- Pages that read the DB declare `export const dynamic = "force-dynamic"` to prevent prerender-time DB opens across build workers.
+- Mutations go through Server Actions in `src/app/_actions/`. Each Zod-parses `FormData`, performs the write (wrapped in `db.transaction(...)` if multi-row, e.g. transfers), then `revalidatePath(...)` and `redirect(...)`.
 
 ## Scripts
 
-| Script          | Purpose                          |
-| --------------- | -------------------------------- |
-| `npm run dev`   | Start dev server (Turbopack)     |
-| `npm run build` | Production build + type-check    |
-| `npm run start` | Run built production server      |
-| `npm run lint`  | Run ESLint                       |
+| Script               | Purpose                                                |
+| -------------------- | ------------------------------------------------------ |
+| `npm run dev`        | Start dev server (Turbopack)                           |
+| `npm run build`      | Production build + type-check                          |
+| `npm run start`      | Run built production server                            |
+| `npm run lint`       | Run ESLint                                             |
+| `npm run db:generate`| Generate Drizzle migration from `src/db/schema.ts`     |
+| `npm run db:migrate` | Apply pending migrations to `data/moneta.db`           |
+| `npm run db:studio`  | Open Drizzle Studio                                    |
+| `npm run db:seed`    | Run seed (idempotent — settings + default categories)  |
 
 ## How to verify changes
 
@@ -59,11 +73,24 @@ Money is the domain. Get this wrong and everything downstream lies.
 ## Project layout
 
 ```
+data/                           # SQLite DB (git-ignored)
+drizzle/                        # Generated SQL migrations
 src/
-└── app/
-    ├── layout.tsx     # Root layout + metadata + fonts
-    ├── page.tsx       # Home
-    └── globals.css    # Tailwind import + theme tokens
+├── app/
+│   ├── _actions/               # Server Actions (mutations, "use server")
+│   ├── _components/            # Shared UI (AppShell, MoneyText, forms, charts)
+│   ├── accounts/               # /accounts, /accounts/[id], /accounts/new
+│   ├── categories/             # /categories, /categories/new
+│   ├── settings/               # /settings
+│   ├── transactions/           # /transactions, /transactions/new
+│   ├── layout.tsx              # Root layout (AppShell wrapper)
+│   ├── loading.tsx             # Global skeleton
+│   ├── error.tsx               # Global error boundary (client)
+│   ├── not-found.tsx           # Global 404
+│   ├── page.tsx                # Dashboard
+│   └── globals.css             # Tailwind import + theme tokens (incl. chart colors)
+├── db/                         # Drizzle schema, lazy client, queries, seed
+└── lib/                        # money, currency, dates, validation, types
 ```
 
 `README.md` is the source of truth for the roadmap and external-facing project description.
